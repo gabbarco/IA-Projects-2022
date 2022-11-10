@@ -52,7 +52,7 @@ def pmx_crossover():
     for i in range(corte1,corte2):
         cortemae=cortemae+(cromossomomae[i])
         corte1pai= corte1pai+(cromossomopai[i])
-    for i in range(corte2,10):
+    for i in range(corte2,len(cromossomopai)):
         corte2pai=corte2pai+(cromossomopai[i])
         corte2mae= corte2mae+(cromossomomae[i])
     # Troca de caracteres repetidos
@@ -86,7 +86,7 @@ def simple_cut_crossover():
     for i in range(0,corte):
         cortepai=cortepai+(cromossomopai[i])
         corte1mae= corte1mae+(cromossomomae[i])
-    for i in range(corte,10):
+    for i in range(corte,len(cromossomopai)):
         cortemae= cortemae+(cromossomomae[i])
         corte1pai= corte1pai+(cromossomopai[i])
     return cortepai,cortemae,'',corte1mae,corte1pai,''
