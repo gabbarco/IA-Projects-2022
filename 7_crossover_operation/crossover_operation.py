@@ -55,7 +55,7 @@ def pmx_crossover():
     for i in range(corte2,10):
         corte2pai=corte2pai+(cromossomopai[i])
         corte2mae= corte2mae+(cromossomomae[i])
-    # Troca de caracteres repetidos Filho 1
+    # Troca de caracteres repetidos
     for i in range(0,len(cortemae)):
         for j in range(0,len(cortepai)):
             if (cortemae[i]==cortepai[j]):
