@@ -29,9 +29,9 @@ def on_method_combobox_current_text_changed():
         mother_line_edit.setInputMask('AAAAAAAAAA')
         mother_line_edit.setText('JHIGFEDCBA')  
     else:
-        father_line_edit.setInputMask('9999999999')
+        father_line_edit.setInputMask('BBBBBBBBBB')
         father_line_edit.setText('0000000000')
-        mother_line_edit.setInputMask('9999999999')
+        mother_line_edit.setInputMask('BBBBBBBBBB')
         mother_line_edit.setText('1111111111')
     print('combo box changed')
 
