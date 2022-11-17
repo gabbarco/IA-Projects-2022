@@ -1,9 +1,8 @@
 import sys
-import perceptron
-from PyQt5 import QtCore, uic
-from PyQt5.QtGui import QIcon
+from PyQt5 import QtCore,uic
 from PyQt5.QtWidgets import QApplication, QComboBox, \
     QPushButton, QLabel, QMessageBox
+from PyQt5.QtGui import QIcon
 
 NUM_OF_NEURONS = 10
 
@@ -16,6 +15,7 @@ class Gui:
         # Getting widget references
         self.black = QIcon("black.png")
         self.white = QIcon("white.png")
+        self.font_cb = self.window.findChild(QComboBox, "fontComboBox")
         self.character_cb = self.window.findChild(QComboBox, "characterComboBox")
         self.train_pb = self.window.findChild(QPushButton, "trainPushButton")
         self.run_pb = self.window.findChild(QPushButton, "runPushButton")
@@ -39,7 +39,12 @@ class Gui:
         # Create and populate training_set
         self.training_set = []
         self.font_a = []
-        self.populate_training_set()
+        self.font_b = []
+        self.populate_training_set('font_a.txt', self.font_a)
+        self.populate_training_set('font_b.txt', self.font_b)
+
+        # Training neural network
+        self.neutral_network = []
 
     def on_character_combobox_current_index_changed(self):
         if int(self.character_cb.currentText()) == -1:
@@ -49,9 +54,12 @@ class Gui:
             self.inputs = list(aux)
             self.update_display()
         else:
-            self.inputs = self.font_a[int(self.character_cb.currentText())]
-            self.update_display()
-
+            if self.font_cb.currentText() == 'Fonte A':
+                self.inputs = self.font_a[int(self.character_cb.currentText())]
+                self.update_display()
+            elif self.font_cb.currentText() == 'Fonte B':
+                self.inputs = self.font_b[int(self.character_cb.currentText())]
+                self.update_display()
     def on_pixel_00_clicked(self):
         if self.pixels[0].toolTip() == "white":
             self.pixels[0].setIcon(self.black)
@@ -853,10 +861,19 @@ class Gui:
             self.inputs[79] = -1
     
     def on_run_pushbutton_clicked(self):
+        # if self.neutral_network == []:
+        #     QMessageBox.warning(QMessageBox(), "Aviso", "Execute o treinamento")
+        #     return
         print("Run clicked")
+        print(self.training_set[0][2][0]) # [0-9] font A [0-9] numbers [0] inputs
+        print(self.training_set[19][2][0]) # [10-19] font J [0-9] numbers [0] inputs
 
     def on_train_pushbutton_clicked(self):
-        print("Train clicked")
+        i = 0
+        for n in range(10):
+            print (self.inputs [i:i+8])
+            i += 8
+        print('gime space')
 
     def populate_pixels_list(self):
         # Hard coding: display 10x8
@@ -866,13 +883,13 @@ class Gui:
                     QPushButton, "pixel"+str(i+1)+str(j+1)))
                 self.pixels[-1].clicked.connect(getattr(self, "on_pixel_" + str(i) + str(j) + "_clicked"))
 
-    def populate_training_set(self):
-        f = open('font_a.txt').readlines()
+    def populate_training_set(self, path, font):
+        f = open(path).readlines()
         aux = []
         for line in f:
             if line.startswith("#"):
                 if aux:
-                    self.font_a.append(list(aux))
+                    font.append(list(aux))
                 aux = []
             else:
                 for x in line.split(","):
@@ -885,11 +902,11 @@ class Gui:
         # present output equal to -1.
         for i in range(NUM_OF_NEURONS):
             aux = []
-            for j in range(len(self.font_a)):
+            for j in range(len(font)):
                 if i == j:
-                    aux.append((self.font_a[j], 1))
+                    aux.append((font[j], 1))
                 else:
-                    aux.append((self.font_a[j], -1))
+                    aux.append((font[j], -1))
             self.training_set.append(aux)
 
     def update_display(self):
@@ -901,6 +918,7 @@ class Gui:
                 self.pixels[p].setIcon(self.white)
                 self.pixels[p].setToolTip("white")
 
+        
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
