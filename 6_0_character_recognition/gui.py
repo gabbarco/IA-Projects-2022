@@ -865,13 +865,13 @@ class Gui:
         #     QMessageBox.warning(QMessageBox(), "Aviso", "Execute o treinamento")
         #     return
         print("Run clicked")
-        print(self.training_set[0][2][0]) # [0-9] font A [0-9] numbers [0] inputs
-        print(self.training_set[19][2][0]) # [10-19] font J [0-9] numbers [0] inputs
+        print("Recognised number= ",self.character_cb.currentText())
+        print("Display do número digitado: ",self.training_set[19][2][0]) # [10-19] font B [0-9] numbers [0] inputs
 
     def on_train_pushbutton_clicked(self):
         i = 0
         for n in range(10):
-            print (self.inputs [i:i+8])
+            print(self.inputs[i:i+8])
             i += 8
         print('gime space')
 
