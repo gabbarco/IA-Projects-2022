@@ -67,7 +67,6 @@ class Gui:
         ga_answer = 0.0
         correct = 0
         incorrect = 0
-
         ga = Ga(self.population_sb.value(),
                 self.crossover_dsb.value(),
                 self.mutation_dsb.value(),

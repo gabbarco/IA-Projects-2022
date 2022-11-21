@@ -44,9 +44,13 @@ class Ga:
     def get_initial_population(self):
         print('Escolha os individuos da população inicial')
         print('A escolha é aleatória dentro dos elementos do vetor com todos os x')
+        #return x[]
 
     def evaluate(self):
         print('Calcule a aptidão de cada individuo da população inicial')
+        #x= get_initial_population
+        #result= calc_function(x)
+        #return result
 
     def select(self):
         print('selecione os individuos para a recombinação')
