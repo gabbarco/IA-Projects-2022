@@ -1,7 +1,7 @@
 import sys
 from gui import Gui
-from PyQt5 import QtCore
-from PyQt5.QtWidgets import QApplication
+from PySide2 import QtCore
+from PySide2.QtWidgets import QApplication
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

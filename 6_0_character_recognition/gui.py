@@ -1,8 +1,11 @@
 import sys
-from PyQt5 import QtCore,uic
-from PyQt5.QtWidgets import QApplication, QComboBox, \
-    QPushButton, QLabel, QMessageBox
-from PyQt5.QtGui import QIcon
+from PySide2 import QtCore
+from PySide2.QtUiTools import QUiLoader
+from PySide2.QtCore import QFile
+from PySide2.QtWidgets import QApplication, QComboBox, \
+    QPushButton, QLabel, QMessageBox, QStatusBar
+from PySide2.QtGui import QIcon
+from perceptron import Perceptron
 
 NUM_OF_NEURONS = 10
 
@@ -10,15 +13,21 @@ NUM_OF_NEURONS = 10
 class Gui:
     def __init__(self):
         # loading widgets elements from ui file
-        self.window = uic.loadUi("character_recognition.ui")
+        # Loading widgets elements from ui file
+        ui_file = QFile("character_recognition.ui")
+        ui_file.open(QFile.ReadOnly)
+        loader = QUiLoader()
+        self.window = loader.load(ui_file)
+        ui_file.close()
 
         # Getting widget references
         self.black = QIcon("black.png")
         self.white = QIcon("white.png")
-        self.font_cb = self.window.findChild(QComboBox, "fontComboBox")
         self.character_cb = self.window.findChild(QComboBox, "characterComboBox")
+        self.characterComboBox = self.window.findChild(QComboBox, "characterComboBox_2")
         self.train_pb = self.window.findChild(QPushButton, "trainPushButton")
         self.run_pb = self.window.findChild(QPushButton, "runPushButton")
+        self.statusbar = self.window.findChild(QStatusBar, "statusbar")
 
         # Connecting Signals
         self.character_cb.currentIndexChanged.connect(self.on_character_combobox_current_index_changed)
@@ -37,14 +46,17 @@ class Gui:
         self.populate_pixels_list()
 
         # Create and populate training_set
-        self.training_set = []
+        self.training_set_a = []
+        self.training_set_b = []
         self.font_a = []
         self.font_b = []
-        self.populate_training_set('font_a.txt', self.font_a)
-        self.populate_training_set('font_b.txt', self.font_b)
+        self.populate_training_set()
 
-        # Training neural network
-        self.neutral_network = []
+        # neurons
+        self.neuron_a = []
+        self.neuron_b = []
+        self.resp_net_a = []
+        self.resp_net_b = []
 
     def on_character_combobox_current_index_changed(self):
         if int(self.character_cb.currentText()) == -1:
@@ -54,12 +66,14 @@ class Gui:
             self.inputs = list(aux)
             self.update_display()
         else:
-            if self.font_cb.currentText() == 'Fonte A':
+            if self.characterComboBox.currentText() == 'Caracter 1':
+                print(self.character_cb.currentText())
                 self.inputs = self.font_a[int(self.character_cb.currentText())]
                 self.update_display()
-            elif self.font_cb.currentText() == 'Fonte B':
+            else:
                 self.inputs = self.font_b[int(self.character_cb.currentText())]
                 self.update_display()
+
     def on_pixel_00_clicked(self):
         if self.pixels[0].toolTip() == "white":
             self.pixels[0].setIcon(self.black)
@@ -859,37 +873,71 @@ class Gui:
             self.pixels[79].setIcon(self.white)
             self.pixels[79].setToolTip("white")
             self.inputs[79] = -1
-    
+
     def on_run_pushbutton_clicked(self):
-        # if self.neutral_network == []:
-        #     QMessageBox.warning(QMessageBox(), "Aviso", "Execute o treinamento")
-        #     return
-        print("Run clicked")
-        print("Recognised number= ",self.character_cb.currentText())
-        print("Display do número digitado: ",self.training_set[19][2][0]) # [10-19] font B [0-9] numbers [0] inputs
+        if (self.characterComboBox.currentText() == 'Caracter 1'):
+            percep = Perceptron()
+            self.resp_net_a = []
+            s = ''
+            for i in range(10):
+                percep.weights = self.neuron_a[i]
+                self.resp_net_a.append(percep.calculate_output(percep.calculate_net(self.inputs)))
+            for i in range(10):
+                if (self.resp_net_a[i] == 1):
+                    if s == '':
+                        s = s + str(i)
+                    else:
+                        s = s + ', ' + str(i)
+
+            self.statusbar.showMessage('Número reconhecido: ' + s)
+        else:
+            percep = Perceptron()
+            self.resp_net_b = []
+            s = ''
+            for i in range(10):
+                percep.weights = self.neuron_b[i]
+                self.resp_net_b.append(percep.calculate_output(percep.calculate_net(self.inputs)))
+            for i in range(10):
+                if (self.resp_net_b[i] == 1):
+                    if s == '':
+                        s = s + str(i)
+                    else:
+                        s = s + ', ' + str(i)
+            self.statusbar.showMessage('Número reconhecido: ' + s)
 
     def on_train_pushbutton_clicked(self):
-        i = 0
-        for n in range(10):
-            print(self.inputs[i:i+8])
-            i += 8
-        print('gime space')
+        if (self.characterComboBox.currentText() == 'Caracter 1'):
+            self.neuron_a = []
+            percep = Perceptron()
+            for i in range(10):
+                percep.update_parameters(self.training_set_a[i], 0, 0, 1)
+                self.neuron_a.append(percep.train())
+            print(self.neuron_a)
+            self.statusbar.showMessage("Rede Treinada")
+        else:
+            self.neuron_b = []
+            percep = Perceptron()
+            for i in range(10):
+                percep.update_parameters(self.training_set_b[i], 0, 0, 1)
+                self.neuron_b.append(percep.train())
+            print(self.neuron_b)
+            self.statusbar.showMessage("Rede Treinada")
 
     def populate_pixels_list(self):
         # Hard coding: display 10x8
         for i in range(10):
             for j in range(8):
                 self.pixels.append(self.window.findChild(
-                    QPushButton, "pixel"+str(i+1)+str(j+1)))
+                    QPushButton, "pixel" + str(i + 1) + str(j + 1)))
                 self.pixels[-1].clicked.connect(getattr(self, "on_pixel_" + str(i) + str(j) + "_clicked"))
 
-    def populate_training_set(self, path, font):
-        f = open(path).readlines()
+    def populate_training_set(self):
+        f = open('font_a.txt').readlines()
         aux = []
         for line in f:
             if line.startswith("#"):
                 if aux:
-                    font.append(list(aux))
+                    self.font_a.append(list(aux))
                 aux = []
             else:
                 for x in line.split(","):
@@ -902,12 +950,40 @@ class Gui:
         # present output equal to -1.
         for i in range(NUM_OF_NEURONS):
             aux = []
-            for j in range(len(font)):
+            for j in range(len(self.font_a)):
                 if i == j:
-                    aux.append((font[j], 1))
+                    aux.append((self.font_a[j], 1))
                 else:
-                    aux.append((font[j], -1))
-            self.training_set.append(aux)
+                    aux.append((self.font_a[j], -1))
+            self.training_set_a.append(aux)
+        # print(self.training_set_a)
+
+        # =========================================================== #
+
+        f = open('font_b.txt').readlines()
+        aux = []
+        for line in f:
+            if line.startswith("#"):
+                if aux:
+                    self.font_b.append(list(aux))
+                aux = []
+            else:
+                for x in line.split(","):
+                    aux.append(int(x))
+        # Activation for each Neuron.
+        # For example: neuron  #0 must be activated (output = 1) only
+        # with the first training pair, corresponding to the number #0.
+        # For the other training pairs (of other numbers), this neuron must
+        # present output equal to -1.
+        for i in range(NUM_OF_NEURONS):
+            aux = []
+            for j in range(len(self.font_b)):
+                if i == j:
+                    aux.append((self.font_b[j], 1))
+                else:
+                    aux.append((self.font_b[j], -1))
+            self.training_set_b.append(aux)
+        # print(self.training_set_b)
 
     def update_display(self):
         for p in range(len(self.pixels)):
@@ -918,7 +994,6 @@ class Gui:
                 self.pixels[p].setIcon(self.white)
                 self.pixels[p].setToolTip("white")
 
-        
 
 if __name__ == "__main__":
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)

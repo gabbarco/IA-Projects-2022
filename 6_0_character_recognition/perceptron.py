@@ -1,6 +1,7 @@
 # Perceptron Class
 # Class to calculate weights using the Perceptron Rule
-import gui
+
+
 class Perceptron:
     def __init__(self):
         self.w_bias = 0.0
@@ -31,6 +32,8 @@ class Perceptron:
 
     def calculate_net(self, inputs):
         net = 0.0
+
+        # net = bias + xi * wi
         for i in range(len(inputs)):
             net += inputs[i] * self.weights[i]
         net += self.w_bias
@@ -96,11 +99,19 @@ class Perceptron:
         print("epochs: " + str(self.num_of_epochs))
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # AND port inputs: bipolar input and target (-1, 1)
-    ts = gui.self.training_set
+    # ts = [([1, 1], 1),
+    #  ([1, -1], -1),
+    #  ([-1, 1], -1),
+    #  ([-1, -1], -1)]
 
-    perceptron = Perceptron()
-    perceptron.update_parameters(ts, 0, 0, 1)
-    perceptron.train()
-    perceptron.print()
+    # ts = [([1, 1], 1),
+    #       ([1, 0], -1),
+    #       ([0, 1], -1),
+    #       ([0, 0], -1)]
+
+    # perceptron = Perceptron()
+    # perceptron.update_parameters(ts, 0, 0, 1)
+    # perceptron.train()
+    # perceptron.print()

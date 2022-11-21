@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>440</width>
-    <height>684</height>
+    <height>734</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2467,15 +2467,15 @@
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="fontComboBox">
+     <widget class="QComboBox" name="characterComboBox_2">
       <item>
        <property name="text">
-        <string>Fonte A</string>
+        <string>Caracter 1</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Fonte B</string>
+        <string>Caracter 2</string>
        </property>
       </item>
      </widget>
@@ -2567,8 +2567,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources>
-  <include location="../../ia-cc-2018-2/06-character-recognition/resource.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
